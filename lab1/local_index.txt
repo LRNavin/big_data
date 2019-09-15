@@ -1,1 +1,2 @@
-/Users/navinLR/Desktop/BigData/code/lab1/data/segment_1/20150218230000.gkg.csv
+/Users/navinLR/Desktop/BigData/code/lab1/data/segment_2/20150218230000.gkg.csv
+/Users/navinLR/Desktop/BigData/code/lab1/data/segment_2/20150218231500.gkg.csv

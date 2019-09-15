@@ -181,9 +181,9 @@ object Lab1{
     spark.stop
   }
 
-  var dataset_size = "1"
+  var dataset_size = "2"
   var data_path = "data/".concat("segment_").concat(dataset_size)
-  var algo = "DataFrame"  // "RDD" or "DataFrame"
+  var algo = "RDD"  // "RDD" or "DataFrame"
 
   def main(args: Array[String]){
 
