@@ -8,14 +8,16 @@ fi
 LOCAL_SEGMENTS=$1
 
 local_file_index=local_index.txt
-input_file=gdeltv2gkg.txt
-segment_folder=segment
+input_file=data/gdeltv2gkg.txt
+segment_folder=data/segment_${LOCAL_SEGMENTS}
 
 BASE_URL=http://gdelt-open-data.s3.amazonaws.com
 
 ! test -e $local_file_index || rm $local_file_index
 test -d $segment_folder || mkdir $segment_folder
 
+echo "File Extractor"
+echo $LOCAL_SEGMENTS
 
 files=$(cat $input_file | head -n $LOCAL_SEGMENTS)
 

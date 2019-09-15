@@ -1,4 +1,4 @@
-name := "Spark - SBD Lab1 - Navin"
+name := "Spark - GDELT data proc - Lab1"
 
 version := "1.0"
 
