@@ -8,8 +8,8 @@ import org.apache.spark.sql._
 import java.sql.Timestamp
 import org.apache.spark.sql.functions._
 import scala.collection.mutable.WrappedArray
-
-
+import org.apache.spark.sql.expressions.{UserDefinedFunction, Window}
+import java.sql.Date
 
 object Lab1{
 
@@ -29,64 +29,64 @@ object Lab1{
   val schema =
     StructType(
       Array(
-        StructField("GKGRECORDID", StringType, nullable=true),
-        StructField("DATE", TimestampType,  nullable=true),
-        StructField("SourceCollectionIdentifier", IntegerType,  nullable=true),
-        StructField("SourceCommonName", StringType, nullable=true),
-        StructField("DocumentIdentifier", StringType, nullable=true),
-        StructField("Counts", StringType, nullable=true),
-        StructField("V2Counts", StringType, nullable=true),
-        StructField("Themes", StringType, nullable=true),
-        StructField("V2Themes", StringType, nullable=true),
-        StructField("Locations", StringType, nullable=true),
-        StructField("V2Locations", StringType, nullable=true),
-        StructField("Persons", StringType, nullable=true),
-        StructField("V2Persons", StringType, nullable=true),
-        StructField("Organizations", StringType, nullable=true),
-        StructField("V2Organizations", StringType, nullable=true),
-        StructField("V2Tone", StringType, nullable=true),
-        StructField("Dates", StringType, nullable=true),
-        StructField("GCAM", StringType, nullable=true),
-        StructField("SharingImage", StringType, nullable=true),
-        StructField("RelatedImages", StringType, nullable=true),
-        StructField("SocialImageEmbeds", StringType, nullable=true),
-        StructField("SocialVideoEmbeds", StringType, nullable=true),
-        StructField("Quotations", StringType, nullable=true),
-        StructField("AllNames", StringType, nullable=true),
-        StructField("Amounts", StringType, nullable=true),
-        StructField("TranslationInfo", StringType, nullable=true),
-        StructField("Extras", StringType, nullable=true)
+        StructField("gkgrecordid", StringType, nullable=true),
+        StructField("date", TimestampType,  nullable=true),
+        StructField("sourceCollectionIdentifier", IntegerType,  nullable=true),
+        StructField("sourceCommonName", StringType, nullable=true),
+        StructField("documentIdentifier", StringType, nullable=true),
+        StructField("counts", StringType, nullable=true),
+        StructField("v2Counts", StringType, nullable=true),
+        StructField("themes", StringType, nullable=true),
+        StructField("v2Themes", StringType, nullable=true),
+        StructField("locations", StringType, nullable=true),
+        StructField("v2Locations", StringType, nullable=true),
+        StructField("persons", StringType, nullable=true),
+        StructField("v2Persons", StringType, nullable=true),
+        StructField("organizations", StringType, nullable=true),
+        StructField("v2Organizations", StringType, nullable=true),
+        StructField("v2Tone", StringType, nullable=true),
+        StructField("dates", StringType, nullable=true),
+        StructField("gcam", StringType, nullable=true),
+        StructField("sharingImage", StringType, nullable=true),
+        StructField("relatedImages", StringType, nullable=true),
+        StructField("socialImageEmbeds", StringType, nullable=true),
+        StructField("socialVideoEmbeds", StringType, nullable=true),
+        StructField("quotations", StringType, nullable=true),
+        StructField("allNames", StringType, nullable=true),
+        StructField("amounts", StringType, nullable=true),
+        StructField("translationInfo", StringType, nullable=true),
+        StructField("extras", StringType, nullable=true)
       )
     )
 
   case class GdeltData (
-                         GKGRECORDID: String,
-                         DATE: Timestamp,
-                         SourceCollectionIdentifier: Integer,
-                         SourceCommonName: String,
-                         DocumentIdentifier: String,
-                         Counts: String,
-                         V2Counts: String,
-                         Themes: String,
-                         V2Themes: String,
-                         Locations: String,
-                         V2Locations: String,
-                         Persons: String,
-                         V2Persons: String,
-                         Organizations: String,
-                         V2Organizations: String,
-                         V2Tone: String,
-                         Dates: String,
-                         GCAM: String,
-                         SharingImage: String,
-                         RelatedImages: String,
-                         SocialImageEmbeds: String,
-                         SocialVideoEmbeds: String,
-                         Quotations: String,
-                         AllNames: String,
-                         Amounts: String,
-                         TranslationInfo: String,
-                         Extras: String
+                         gkgrecordid: String,
+                         date: Timestamp,
+                         sourceCollectionIdentifier: Integer,
+                         sourceCommonName: String,
+                         documentIdentifier: String,
+                         counts: String,
+                         v2Counts: String,
+                         themes: String,
+                         v2Themes: String,
+                         locations: String,
+                         v2Locations: String,
+                         persons: String,
+                         v2Persons: String,
+                         organizations: String,
+                         v2Organizations: String,
+                         v2Tone: String,
+                         dates: String,
+                         gcam: String,
+                         sharingImage: String,
+                         relatedImages: String,
+                         socialImageEmbeds: String,
+                         socialVideoEmbeds: String,
+                         quotations: String,
+                         allNames: String,
+                         amounts: String,
+                         translationInfo: String,
+                         extras: String
                        )
 
   case class GdeltDataReduced (
@@ -106,33 +106,28 @@ object Lab1{
   def RDD_Implementaion(folderPath: String, detailedPrinting: Boolean){
 
     println("IMPLEMENTATION: RDD")
-
+    val t1 = System.nanoTime
     val ds = sc.textFile(folderPath).map(line => line.split("\t"))
+            .filter(row => row.length > 23)
+            .map(record => ((record(1)), (record(23).split(";"))))
+            .map {case (left, right) => ( left.take(8), right.map(x => x.split(",")(0)))} // (date, Array(word))
+            .flatMapValues(x => x)  // (date, word)
+            .filter(!_._2.contains("Type_ParentCategory"))
+            .map { case (left, right) => ((left, right), 1) }.reduceByKey(_+_) // ((date, word), count)
+            .map{ case ( (x,y),z ) => (x ,(y,z) )}.groupByKey()
+            .mapValues(x => x.toList.sortBy(x => -x._2).take(10))
 
-    val filtered = ds.filter(row => row.length > 23)
-
-    val data = filtered.map(record => ((record(1)), (record(23).split(";"))))
-
-    val formatted = data.map {case (left, right) => ( left.take(8), right.map(x => x.split(",")(0)))} // (date, Array(word))
-
-    val flat = formatted.flatMapValues(x => x) // (date, word)
-
-    val reduced = (flat.map { case (left, right) => ((left, right), 1) }).reduceByKey(_+_) // ((date, word), count)
-
-    val perDay = reduced.map{ case ( (x,y),z ) => (x ,(y,z) )}.groupByKey()
-
-    val sorted = perDay.mapValues(x => x.toList.sortBy(x => -x._2).take(10))
-
-    sorted.collect().foreach(println)
-
+    ds.collect().foreach(println)
+    val duration = (System.nanoTime - t1) / 1e9d
+    println("******************* Elapsed Time *******************")
+    println(duration)
     spark.stop
   }
 
   def DataFrame_Implementation(folderPath:String, detailedPrinting: Boolean){
 
     println("IMPLEMENTATION: DATASET")
-    println(folderPath)
-
+    val t1 = System.nanoTime
     val df = spark
       .read
       .schema(schema)
@@ -141,47 +136,37 @@ object Lab1{
       .csv(folderPath)
 
     val ds = df
-      .select($"DATE", $"AllNames")
+      .select($"date", $"allNames")
       .as[GdeltDataReduced]
-      .withColumn("DATE", date_trunc("dd", $"DATE"))
-      .withColumn("AllNames", split($"AllNames",";"))
-      .filter("Date is not null")
-      .filter("AllNames is not null")
-      .withColumn("topic", explode($"AllNames"))
+      .withColumn("date", date_trunc("dd", $"date"))
+      .withColumn("allNames", split($"allNames",";"))
+      .filter("date is not null")
+      .filter("allNames is not null")
+      .withColumn("topic", explode($"allNames"))
       .withColumn("topic", regexp_replace($"topic", ",[0-9]+", ""))
-      .select("DATE", "topic")
-
-    if (detailedPrinting){
-      println("=============================")
-      println("== GENERAL INFO: FULL DATA ==")
-      println("Number of records of Dataset: " + ds.count())
-      ds.printSchema()
-      ds.show(10)
-      println("=============================")
-    }
+      .select("date", "topic")
 
     val top_ds = ds
-      .groupBy($"DATE", $"topic")
+      .groupBy($"date", $"topic")
       .agg(count($"topic").as("count"))
       .withColumn("topicCountsTuples", intoTuple($"topic",$"count"))
-      .groupBy("DATE")
+      .groupBy("date")
       .agg(collect_list("topicCountsTuples").as("topicCountsTuples"))
       .withColumn("topTenTopics", getTopTenUDF($"topicCountsTuples"))
-      .select("DATE", "topTenTopics")
+      .select("date", "topTenTopics")
 
     println("=============================")
     println("=== GENERAL INFO: TOP TEN ===")
-    println("Number of records of Dataset: " + top_ds.count())
-    top_ds.printSchema()
-    top_ds.show(10)
-    println("=============================")
-
     top_ds.take(1).foreach(r => println(r.get(1)))
+    val duration = (System.nanoTime - t1) / 1e9d
+    println("******************* Elapsed Time *******************")
+    println(duration)
+    println("=============================")
 
     spark.stop
   }
 
-  var dataset_size = "2"
+  var dataset_size = "50"
   var data_path = "data/".concat("segment_").concat(dataset_size)
   var algo = "RDD"  // "RDD" or "DataFrame"
 
