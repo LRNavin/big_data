@@ -166,7 +166,7 @@ object Lab1{
 
 //  var dataset_size = "1"
   var data_path = "data/".concat("segment") //.concat(dataset_size)
-  var algo = "RDD"  // "RDD" or "DataFrame"
+  var algo = "DataFrame"  // "RDD" or "DataFrame"
 
   def main(args: Array[String]){
 

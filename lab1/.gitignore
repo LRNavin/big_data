@@ -21,3 +21,5 @@ spark-events
 
 # Datasets
 data/segment_*/
+segment/
+local_index.tx
