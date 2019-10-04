@@ -1,4 +1,4 @@
-name := "Spark - GDELT data proc - Lab1"
+name := "gdelt_lab1"
 
 version := "1.0"
 

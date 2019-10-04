@@ -1,6 +1,6 @@
-name := "Spark - SBD Lab1 - Navin"
+name := "lab2"
 
-version := "1.0"
+version := "4.0"
 
 scalaVersion := "2.11.12"
 
