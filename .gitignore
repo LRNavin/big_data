@@ -3,3 +3,4 @@
 .sbt/
 project/
 target/
+lab2/project/*
