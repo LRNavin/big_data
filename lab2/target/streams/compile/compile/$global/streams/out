@@ -1,4 +1,0 @@
-[0m[[0m[31merror[0m] [0m[0m/root/src/main/scala/lab1.scala:126:17: not found: value dateAllNamesKVP[0m
-[0m[[0m[31merror[0m] [0m[0m      .map(k => dateAllNamesKVP(k(1), k(23)))  // Create the key value pair(Date,AllNames).[0m
-[0m[[0m[31merror[0m] [0m[0m                ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m

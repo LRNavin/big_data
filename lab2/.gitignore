@@ -23,4 +23,4 @@ spark-events
 data/segment_*/
 segment/
 local_index.txt
-project/*
+project
