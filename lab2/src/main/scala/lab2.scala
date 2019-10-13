@@ -111,8 +111,11 @@ object Lab2{
   def RDD_Implementation(folderPath: String){
 
     println("IMPLEMENTATION: RDD")
+    val data = sc.textFile(folderPath);
+    
     val t1 = System.nanoTime
-    val ds = sc.textFile(folderPath).map(line => line.split("\t"))
+
+    val ds = data.map(line => line.split("\t"))
             .filter(row => row.length > 23)
             .map(record => ((record(1)), (record(23).split(";"))))
             .map {case (left, right) => ( left.take(8), right.map(x => x.split(",")(0)))} // (date, Array(word))
@@ -137,13 +140,14 @@ object Lab2{
   def DataFrame_Implementation(folderPath:String, details: Boolean){
 
     println("IMPLEMENTATION: DATASET")
-    val t1 = System.nanoTime
     val df = spark
       .read
       .schema(schema)
       .option("sep", "\t")
       .option("timestampFormat", "yyyyMMddHHmmss")
       .csv(folderPath).as[GdeltData]
+    
+    val t1 = System.nanoTime
 
     val ds = df
       .withColumn("date", date_trunc("dd", $"date"))
@@ -190,7 +194,8 @@ object Lab2{
       .withColumn("topTenTopics", getTopTenUDF($"topicCountsTuples")) //Will try rank here!
       .select("date", "topTenTopics")
     // print output
-    top_ds.take(1).foreach(r => println(r.get(1)))
+    top_ds.write.format("json").save("s3://anwesh-tud-aws/output_logs")
+    // top_ds.take(1).foreach(r => println(r.get(1)))
     val duration = (System.nanoTime - t1) / 1e9d
     println("******************* Elapsed Time *******************")
     println(duration)
@@ -221,15 +226,14 @@ object Lab2{
             }
             case "m" => {
               //one month
-              DataFrame_Implementation("s3://gdelt-open-data/v2/gkg/201502*", false)
+              DataFrame_Implementation("s3n://gdelt-open-data/v2/gkg/201502*", false)
             }
             case "l" => {
               //6 months
               DataFrame_Implementation("s3://gdelt-open-data/v2/gkg/20150[1-6]*", false)
             }
             case "f" => {
-              println("not available")
-              // DataFrame_Implementation("s3://gdelt-open-data/v2/gkg/*", false)
+              DataFrame_Implementation("s3://gdelt-open-data/v2/gkg/*", false)
             }
             case "local" => {
               DataFrame_Implementation("./data/20150218230000.gkg.csv", false)
@@ -256,8 +260,7 @@ object Lab2{
               RDD_Implementation("s3://gdelt-open-data/v2/gkg/20150[1-6]*")
             }
             case "f" => {
-              println("not available")
-              // RDD_Implementation("s3://gdelt-open-data/v2/gkg/*")
+              RDD_Implementation("s3://gdelt-open-data/v2/gkg/*")
             }
             case "local" => {
               RDD_Implementation("./data/20150218230000.gkg.csv")
