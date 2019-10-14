@@ -1,6 +1,5 @@
 ## Lab 2: Supercomputing for Big Data, Delft University of Technology
-## Group 6
-###  Navin Raj Prabhu - 4764722, Anwesh Marwade - 5052068
+### Group 6 - Navin Raj Prabhu - 4764722, Anwesh Marwade - 5052068
 
 #### October 13, 2019
 
