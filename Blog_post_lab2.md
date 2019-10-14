@@ -1,8 +1,5 @@
 ## Lab 2: Supercomputing for Big Data, Delft University of Technology
-
-### Authors:
-
-### Group 6: Navin Raj Prabhu - 4764722, Anwesh Marwade - 5052068
+### Group 6 - Navin Raj Prabhu - 4764722, Anwesh Marwade - 5052068
 
 #### October 13, 2019
 
@@ -20,7 +17,9 @@ We executed our code on data samples using both the implementations from lab one
 while familiarizing ourselves with the AWS cluster environment as well. We measured execution times for 1
 segment (15 minute data), 1 day, 1 month, 3 months and 6 months on our cluster. As expected from our
 analysis in the previous lab, RDD was promising for very small sized data but fell well behind the Dataframe
-implementation as we increased the number of data segments, see 1.
+implementation as we increased the number of data segments, see figure below.
+
+![RDD vs Dataframe](/images/RDDvDataset.png)
 
 ```
 Figure 1: Analysing performance RDD vs Dataframe
@@ -133,30 +132,30 @@ The current cost of the run is,
 
 ### Code Optimisations
 
-We explored some code optimisations with a goal of improving our execution time and our distributing our
-computation.
+We explored some code optimisations with a goal of improving our execution time and distributing our
+computation optimally.
 
 #### Rank vs UDF
-
+![RDD vs Dataframe](/images/rankvudf.png)
 ```
-Figure 6: Optimising function: rank vs user-defined
+Figure 6: Optimising the code: rank vs user-defined
 ```
-Using the Rank function to filter the top ten, we did not find a considerable improvement in execution time.
-We saw that our UDF, which used sort and take functions to get the top ten, showed better results, see 6. So,
+Using the Rank function to filter out the top ten topics, we did not find a considerable improvement in execution time.
+We saw that our UDF, which used __sort__ and __take__ functions to get the top ten, showed better results. So,
 we chose to keep our filtering approach from the previous lab.
 
 #### Kryo Serialization
 
 We tried to optimise our shuffling operations in the RDD implementation by using the kryo serialization for a
 more lightweight serialization. However, we ended up carrying out our analysis using the dataset implementation
-which inherently uses a specialized encoder for serialization during network transmission or processing [1]. The
+which inherently uses a specialized encoder for serialization during network transmission or processing [(link)](https://spark.apache.org/docs/2.1.0/sql-programming-guide.html). The
 optimized performance of the dataset API was verified during our inital run.
 
 #### Storing the results to S3 (Parallel writes)
 
 We changed the code to allow writing the output to a file on S3. By doing so we avoided the’take/show’
 operation which asked the master node to gather the data in order to print it to the output. By logging our
-output to S3, we try to leverage thedistributed-nessof S3.
+output to S3, we try to leverage the _distributed-ness_ of S3.
 
 ### Cloud Optimisations
 
@@ -164,7 +163,7 @@ In this section, the tasks of fine-tuning the cluster’s configuration will be 
 
 #### Spark configurations
 Exploring configurations for optimally running the spark application on our cluster, we found out that the two
-main resources Spark (and YARN) worry about are CPU and memory. Since the CPU usage was a bottleneck
+main resources Spark (and YARN) worry about are _CPU_ and _memory_. Since the CPU usage was a bottleneck
 (seen from previous sections), we decided to increase parallel computations in nodes by tuning certain YARN
 configurations like configuring the number of executors per node. The documentation talks mainly about the
 following configurations,
@@ -199,7 +198,7 @@ Figure 7: Cluster Performance Statistics - c4.8xlarge [20 nodes, 320 executors]
 
 #### Best EMR configuration
 
-We use thePrice per Performance($/TB) metrics to measure the utility of the EMR cluster’s configurations.
+We use the __Price per Performance ($/TB)__ metric to measure the utility of the EMR cluster’s configurations.
 Table - 1, are some of the configurations tested.
 
 ```
@@ -252,11 +251,11 @@ metric. We also ran our configuration using better spec machines (c5.9xlarge) an
 the run-time. We saw that by tuning our spark job such that it optimises its resource allocation, we reduced
 the Run-costs and improved the performance metric.
 
-## 4 Future scope
+## Future scope
 
 Even though we optimised the code to get a runtime of less than 30 minutes, there can be more changes made to
 the code that might result in performance improvements. For example, various serialization libraries could be
-tested out, garbage generation/collection could be improved, shuffling operations could be reduced by 1. These
+tested out, garbage generation/collection could be improved, one shuffling operation could be further reduced. These
 improvements would need to be regression tested for evaluating its utility versus performance (improvement).
 Further, the multitude to configurations available in spark could be tested out further and tweak accordingly
 to try to reduce the run-time by optimising hardware utilisation.
