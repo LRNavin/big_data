@@ -42,13 +42,9 @@ distributed environment of AWS.
 After some preliminary tests with smaller datasets, we were confident enough to scale our code to the full dataset
 (4TB). For this task, we decided to use the Dataframe/Dataset based approach. For the cluster setup, we used
 20 EC2 (c4.8xlarge) cluster slave-nodes and 1 EC2 (c4.8xlarge) cluster master-node. Number of executors, by
-default, was set to 1 per node, so in total, 20 executors. A screenshot explaining the hardware setup of the
-cluster can be seen in Fig- 2.
+default, was set to 1 per node, so in total, 20 executors. 
 
-
-```
-Figure 2: Cluster Setup - 20 + 1 EC2 (c4.8xlarge) clusters
-```
+![Initial Error](https://github.com/LRNavin/big_data/blob/master/images/20ex/init_error.png)
 ```
 Figure 3: Full Dataset Error
 ```
@@ -65,6 +61,7 @@ giving him most of the Nodes resources. In our case, 20 executors for our 20 nod
 
 ### Results
 
+![Optimised Run](https://github.com/LRNavin/big_data/blob/master/images/20ex/result_20ex.png)
 ```
 Figure 4: Full Dataset run - Results
 ```
@@ -93,9 +90,9 @@ The above analysis tasks were performed using the graphs in Ganglia, seen in Fig
 ```
 Figure 5: Cluster Performance Statistics - c4.8xlarge [20 nodes, 20 executors]
 ```
-```
+
 Some important inferences from Fig- 5,
-```
+
 1. CPU utilization (Fig- 7a, 7b) : We see that the cluster utilizes only 70% of the CPU, but the cpu load is
     evenly distributed across all the 20 nodes. This is one place where an optimisation could be made. This
     could be improved if we increase the number of tasks that can run on each node.
@@ -183,44 +180,7 @@ Figure 7: Cluster Performance Statistics - c4.8xlarge [20 nodes, 320 executors]
 We use the __Price per Performance ($/TB)__ metric to measure the utility of the EMR cluster’s configurations.
 Table - 1, are some of the configurations tested.
 
-```
-Dataset EC2 Cluster
-Cost per Node
-($)
-```
-```
-Cluster
-(#nodes, #executors)
-```
-```
-Run-time
-(mins)
-```
-```
-Run-cost
-($)
-```
-```
-Price per Performance
-($/TB)
-4TB
-(Full GDELT)
-c4.8xlarge 0.41 20, 20 5.7 0.82 0.
-4TB
-(Full GDELT)
-c4.8xlarge 0.41 20,40 5.9 0.84 0.
-```
-```
-4TB
-(Full GDELT)
-c4.8xlarge 0.41 15, 30 7.9 1.13 0.
-4TB
-(Full GDELT)
-c4.8xlarge 0.41 20, 320 4.6 0.66 0.
-4TB
-(Full GDELT)
-c5.9xlarge 0.68 20, 320 4.0 0.95 0.
-```
+![EMR Configurations Performance](https://github.com/LRNavin/big_data/blob/master/images/20ex/table_result.png)
 ```
 Table 1: Performance of Cluster - Different setups
 ```
