@@ -1,6 +1,6 @@
 name := "lab2"
 
-version := "4.0"
+version := "7.4"
 
 scalaVersion := "2.11.12"
 

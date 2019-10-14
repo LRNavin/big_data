@@ -15,3 +15,10 @@ run
 package
 spark-submit --class main.Dataframe_Implementation /Users/navinLR/Desktop/BigData/code/lab1/target/scala-2.11/gdelt_lab2_2.11-1.0.jar
 package
+run
+run dataset local
+package
+run dataset s
+package
+run dataset small
+package
