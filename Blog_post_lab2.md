@@ -89,6 +89,8 @@ improvements where resources are under used. The following analysis tasks were p
 
 The above analysis tasks were performed using the graphs in Ganglia, seen in Fig- 5.
 
+
+![CPU Usage - Cluster](https://github.com/LRNavin/big_data/blob/master/images/20ex/cpu_usage_20ex.png)
 ```
 (a) CPU Usage - Cluster
 (b) Load Distribution - Nodes
