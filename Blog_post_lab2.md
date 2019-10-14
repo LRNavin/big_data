@@ -89,18 +89,7 @@ improvements where resources are under used. The following analysis tasks were p
 
 The above analysis tasks were performed using the graphs in Ganglia, seen in Fig- 5.
 
-
-![CPU Usage - Cluster](https://github.com/LRNavin/big_data/blob/master/images/20ex/cpu_usage_20ex.png)
-```
-(a) CPU Usage - Cluster
-(b) Load Distribution - Nodes
-```
-```
-(c) Memory Usage - Cluster (d) Load - Cluster
-```
-```
-(e) Network Usage - Cluster
-```
+![Cluster Performance](https://github.com/LRNavin/big_data/blob/master/images/20ex/20ex_full.png)
 ```
 Figure 5: Cluster Performance Statistics - c4.8xlarge [20 nodes, 20 executors]
 ```
@@ -184,16 +173,7 @@ optimised these numbers if not for the limited credits available.
 
 ``` −−num−executors 320−−executor−cores 5−−executor−memory 4g−−driver−memory 10G```
 
-```
-(a) CPU Usage - Cluster
-(b) Load Distribution - Nodes
-```
-```
-(c) Memory Usage - Cluster (d) Load - Cluster
-```
-```
-(e) Network Usage - Cluster
-```
+![Cluster Performance - Optimised](https://github.com/LRNavin/big_data/blob/master/images/20ex/320ex_full.png)
 ```
 Figure 7: Cluster Performance Statistics - c4.8xlarge [20 nodes, 320 executors]
 ```
