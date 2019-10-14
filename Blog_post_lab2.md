@@ -6,7 +6,7 @@
 
 ## Preliminary Run
 
-After deploying our JAR on the AWS cluster (configuration: 1 Master node and 19 worker nodes - c4.8xlarge
+After deploying our JAR on the AWS cluster (configuration: 1 Master node and 20 worker nodes - c4.8xlarge
 specification), we decided to do some initial code runs to analyse our performance and more importantly to
 preemptively measure execution time. This allowed us to reasonably evaluate the scalability of our code before
 running it on the entire dataset. We first looked at some aspects we could tweak straightaway. These were,
