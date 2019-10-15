@@ -77,13 +77,7 @@ the execution statistics.
 
 The next step is to check the how our cluster’s resources get utilized during the full dataset run. For this task,
 we used theGanglia. Such an analysis, would also help us optimise the cost of the run, by detecting places for
-improvements where resources are under used. The following analysis tasks were performed,
-
-1. Analyse CPU utilization of our Cluster and its Nodes.
-2. Analyse RAM usage of Cluster.
-3. Analyse Load of the Cluster.
-4. Analyse Network usage of Cluster.
-
+improvements where resources are under used. 
 The above analysis tasks were performed using the graphs in Ganglia, seen in Fig- 5.
 
 ![Cluster Performance](https://github.com/LRNavin/big_data/blob/master/images/20ex/20ex_full.png)
@@ -91,7 +85,7 @@ The above analysis tasks were performed using the graphs in Ganglia, seen in Fig
 Figure 5: Cluster Performance Statistics - c4.8xlarge [20 nodes, 20 executors]
 ```
 
-Some important inferences from Fig- 5,
+Some important inferences using Ganglia, from Fig- 5,
 
 1. CPU utilization (Fig- 7a, 7b) : We see that the cluster utilizes only 70% of the CPU, but the cpu load is
     evenly distributed across all the 20 nodes. This is one place where an optimisation could be made. This
@@ -124,7 +118,9 @@ We explored some code optimisations with a goal of improving our execution time 
 computation optimally.
 
 #### Rank vs UDF
-![RDD vs Dataframe](/images/rankvudf.png)
+
+<img src="https://github.com/LRNavin/big_data/blob/master/images/rankvudf.png" width="500" height="300" />
+
 ```
 Figure 6: Optimising the code: rank vs user-defined
 ```
@@ -174,6 +170,17 @@ optimised these numbers if not for the limited credits available.
 ```
 Figure 7: Cluster Performance Statistics - c4.8xlarge [20 nodes, 320 executors]
 ```
+
+##### Optimised Results
+* Run-Time - **4.6 min**
+* Run-Cost - **0.66 $**
+* Price per Performance - **0.17 $/TB**
+
+##### Improvements
+* Faster Run-time
+* Cheaper Run cost
+* Better CPU usage >80%
+* Optimal Lads/Procs
 
 #### Best EMR configuration
 
