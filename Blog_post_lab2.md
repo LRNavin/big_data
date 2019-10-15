@@ -19,7 +19,7 @@ segment (15 minute data), 1 day, 1 month, 3 months and 6 months on our cluster. 
 analysis in the previous lab, RDD was promising for very small sized data but fell well behind the Dataframe
 implementation as we increased the number of data segments, see figure below.
 
-<img src="https://github.com/LRNavin/big_data/blob/master/images/RDDvDataset.png" width="500" height="300" />
+<img align="center" src="https://github.com/LRNavin/big_data/blob/master/images/RDDvDataset.png" width="500" height="300" />
 
 ```
 Figure 1: Analysing performance RDD vs Dataframe
@@ -46,10 +46,10 @@ default, was set to 1 per node, so in total, 20 executors.
 
 ![Initial Error](https://github.com/LRNavin/big_data/blob/master/images/20ex/init_error.png)
 ```
-Figure 3: Full Dataset Error
+Figure 2: Full Dataset Error
 ```
 This cluster setup worked well for smaller GDELT datasets, i.e. For a day, For a month and For a year.
-But, it failed for the whole datasets (4TB). When checking logs, the following error occurred (seen in Fig-3).
+But, it failed for the whole datasets (4TB). When checking logs, the following error occurred (seen in Fig-2).
 The error was related to Resource Insufficiency - in specific, memory limit error. So, we decided to check cluster
 configurations to tackle this error. On research, we found a way to configure the EMR cluster to increase
 resource allocation to the cluster nodes. In AWS EMR cluster, it is possible to configure your executors to
@@ -63,10 +63,10 @@ giving him most of the Nodes resources. In our case, 20 executors for our 20 nod
 
 ![Optimised Run](https://github.com/LRNavin/big_data/blob/master/images/20ex/result_20ex.png)
 ```
-Figure 4: Full Dataset run - Results
+Figure 3: Full Dataset run - Results
 ```
 After configuringmaximizeResourceAllocation, we were ready to run our dataframe-based code on the full
-dataset. The results of the run can be seen in Fig- 4. The complete 4TB of GDELT dataset was analysed
+dataset. The results of the run can be seen in Fig- 3. The complete 4TB of GDELT dataset was analysed
 for the task oftop 10 task for the day, in just 5.7 minutes. With this result, we achieved the most basic
 requirement of this lab assignment - to run the full dataset in less than 30 min. Nevertheless, with the hope to
 improve this performance and to look out for any exisitng drawbacks of the cluster setup, we decided to analyse
@@ -76,28 +76,23 @@ the execution statistics.
 ### Performance Analysis
 
 The next step is to check the how our cluster’s resources get utilized during the full dataset run. For this task,
-we used theGanglia. Such an analysis, would also help us optimise the cost of the run, by detecting places for
+we used the Ganglia. Such an analysis, would also help us optimise the cost of the run, by detecting places for
 improvements where resources are under used. 
-The above analysis tasks were performed using the graphs in Ganglia, seen in Fig- 5.
 
 ![Cluster Performance](https://github.com/LRNavin/big_data/blob/master/images/20ex/20ex_full.png)
 ```
-Figure 5: Cluster Performance Statistics - c4.8xlarge [20 nodes, 20 executors]
+Figure 4: Cluster Performance Statistics - c4.8xlarge [20 nodes, 20 executors]
 ```
 
-Some important inferences using Ganglia, from Fig- 5,
+Some important inferences using Ganglia, from Fig- 4,
 
-1. CPU utilization (Fig- 7a, 7b) : We see that the cluster utilizes only 70% of the CPU, but the cpu load is
+1. CPU utilization (Fig- 4a, 4b) : We see that the cluster utilizes only 70% of the CPU, but the cpu load is
     evenly distributed across all the 20 nodes. This is one place where an optimisation could be made. This
     could be improved if we increase the number of tasks that can run on each node.
-2. RAM usage (Fig- 7c) : The memory usage graph shows no anomalous behaviour. Probably, if we optimize
+2. RAM usage (Fig- 4c) : The memory usage graph shows no anomalous behaviour. Probably, if we optimize
     the CPU usage, better cache and usage in RAM can be expected.
-3. Load (Fig- 7d) : A similar inference as CPU usage can be drawn here. That is, while total CPU’s capacity
+3. Load (Fig- 4d) : A similar inference as CPU usage can be drawn here. That is, while total CPU’s capacity
     - loads/processes is 756, along the run only ̃500 loads/processes (which is 70% of the total) is utilised.
-
-
-4. Network usage (Fig- 7e) : We do not see any anomalous behaviour here, as network usage is consistently
-    around 19GB/sec.
 
 Overall, we can say that optimizing CPU usage is one main point of bother and fixing that might improve
 cluster performance and eventually the run-time and the run-cost. Optimising CPU usage will also improve
@@ -107,7 +102,7 @@ RAM usage and Load, as CPU usage directly both RAM and Load.
 
 The current cost of the run is,
 
-- Run-Cost = (0.41 * 21) * (5.7/60) =0.82$
+- Run-Cost = (0.41 * 21) * (5.7/60) = **0.82$**
 - where, Cost per Node = 0.41$, Total Node used = 20, Total Run-time = 5.7 minutes.
 
 ## Fine tuning and optimisations
@@ -119,12 +114,12 @@ computation optimally.
 
 #### Rank vs UDF
 
-<img src="https://github.com/LRNavin/big_data/blob/master/images/rankvudf.png" width="500" height="300" />
+<img align="center" src="https://github.com/LRNavin/big_data/blob/master/images/rankvudf.png" width="500" height="300" />
 
 ```
-Figure 6: Optimising the code: rank vs user-defined
+Figure 5: Optimising the code: Rank vs User-defined
 ```
-Using the Rank function to filter out the top ten topics, we did not find a considerable improvement in execution time.
+Using the Rank function to filter out the top ten topics, we did not find a considerable improvement in execution time (As seen in Fig-5).
 We saw that our UDF, which used __sort__ and __take__ functions to get the top ten, showed better results. So,
 we chose to keep our filtering approach from the previous lab.
 
@@ -161,14 +156,14 @@ of 720 (36 * 20) cores and additionally considering 2 threads per core, we doubl
 for each executor (concurrent tasks), we tried setting the–num-executorsvalue to (720 * 2)/5≈300. For the
 memory allocations, we calculated 60GB (Memory spec for c4.8xlarge) available for 15 executors per node (
 executors for 20 nodes) and allocated 60/15≈4GB for each executor. Attempting to run the analysis with the
-said configuration, we managed to improve the CPU utilisation by about 20 per-cent! We could have further
+said configuration, we managed to improve the CPU utilisation by about 20 per-cent! (Performance visualized in Fig-6) We could have further
 optimised these numbers if not for the limited credits available. Nevertheless, post optimisation, the complete 4TB of GDELT dataset was analysed for the task oftop 10 task for the day, in just 4.6 minutes.
 
 ``` −−num−executors 320−−executor−cores 5−−executor−memory 4g−−driver−memory 10G```
 
 ![Cluster Performance - Optimised](https://github.com/LRNavin/big_data/blob/master/images/20ex/320ex_full.png)
 ```
-Figure 7: Cluster Performance Statistics - c4.8xlarge [20 nodes, 320 executors]
+Figure 6: Cluster Performance Statistics - c4.8xlarge [20 nodes, 320 executors]
 ```
 
 ##### Optimised Results
@@ -179,7 +174,7 @@ Figure 7: Cluster Performance Statistics - c4.8xlarge [20 nodes, 320 executors]
 ##### Improvements
 * Faster Run-time
 * Cheaper Run cost
-* Better CPU usage >80%
+* Better CPU usage **>80%**
 * Optimal Lads/Procs
 
 #### Best EMR configuration
