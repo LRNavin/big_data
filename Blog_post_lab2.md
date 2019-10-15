@@ -19,7 +19,7 @@ segment (15 minute data), 1 day, 1 month, 3 months and 6 months on our cluster. 
 analysis in the previous lab, RDD was promising for very small sized data but fell well behind the Dataframe
 implementation as we increased the number of data segments, see figure below.
 
-<img src="https://github.com/LRNavin/big_data/blob/master/images/RDDvDataset.png" width="450" height="300" />
+<img src="https://github.com/LRNavin/big_data/blob/master/images/RDDvDataset.png" width="500" height="300" />
 
 ```
 Figure 1: Analysing performance RDD vs Dataframe
