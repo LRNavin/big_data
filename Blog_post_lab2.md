@@ -67,7 +67,7 @@ Figure 4: Full Dataset run - Results
 ```
 After configuringmaximizeResourceAllocation, we were ready to run our dataframe-based code on the full
 dataset. The results of the run can be seen in Fig- 4. The complete 4TB of GDELT dataset was analysed
-for the task oftop 10 task for the day, in just5.7 minutes. With this result, we achieved the most basic
+for the task oftop 10 task for the day, in just 5.7 minutes. With this result, we achieved the most basic
 requirement of this lab assignment - to run the full dataset in less than 30 min. Nevertheless, with the hope to
 improve this performance and to look out for any exisitng drawbacks of the cluster setup, we decided to analyse
 the execution statistics.
@@ -162,7 +162,7 @@ for each executor (concurrent tasks), we tried setting the–num-executorsvalue 
 memory allocations, we calculated 60GB (Memory spec for c4.8xlarge) available for 15 executors per node (
 executors for 20 nodes) and allocated 60/15≈4GB for each executor. Attempting to run the analysis with the
 said configuration, we managed to improve the CPU utilisation by about 20 per-cent! We could have further
-optimised these numbers if not for the limited credits available.
+optimised these numbers if not for the limited credits available. Nevertheless, post optimisation, the complete 4TB of GDELT dataset was analysed for the task oftop 10 task for the day, in just 4.6 minutes.
 
 ``` −−num−executors 320−−executor−cores 5−−executor−memory 4g−−driver−memory 10G```
 
