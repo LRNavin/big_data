@@ -81,7 +81,7 @@ class HistogramTransformer extends Transformer[String, String, KeyValue[String, 
   // Change to 'x' hour or as per manual.pdf
   val df: SimpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm")
   val timeWindow = 3600 // 3600 secs for one hour
-  val refreshFrequency = 60 // 3600 secs for one hour
+  val refreshFrequency = 30 // 3600 secs for one hour
 
   // Initialize Transformer object
   def init(context: ProcessorContext) {
@@ -99,18 +99,23 @@ class HistogramTransformer extends Transformer[String, String, KeyValue[String, 
 
   def computeHistogram() = {
     println("Refreshing Data Store ->->->")
+    // Refresh Histogram Periodically (every refreshFrequency) - By Updating Name Store using Log Store
     val recordsIterator = logStore.all() // To iterate over all logs
     val newDate: Date  = df.parse(df.format(Calendar.getInstance().getTime()))
 
+    // Iterationg over all exisitng logs
     while(recordsIterator.hasNext){
       val record = recordsIterator.next()
       try{
         val recordTimestamp = record.key.split("-")(0).toLong
         val oldDate: Date  = new Date(recordTimestamp)
+        // Time Checker - For Old data i.e Data Age > timeWindow
         if((newDate.getTime()  - oldDate.getTime()) / 1000 > this.timeWindow){
-          countStore.put(record.value, countStore.get(record.value)-1) // Decreament count of name state record
-          logStore.delete(record.key) // Delete log of record
-          context.forward(record.value, countStore.get(record.value))
+          // Decreament count of name state record
+          countStore.put(record.value, countStore.get(record.value)-1)
+          // Delete log of record
+          logStore.delete(record.key)
+          context.forward(record.value, countStore.get(record.value)) // Update
         }
       } catch {
         case e: Exception => {
@@ -130,11 +135,13 @@ class HistogramTransformer extends Transformer[String, String, KeyValue[String, 
     val newDate: Date  = df.parse(df.format(Calendar.getInstance().getTime()))
 
     val currentCount: Optional[Long] = Optional.ofNullable(countStore.get(name))
-    var newCount: Long = currentCount.orElse(1L)
+    // 1. If Null (New Name) - Initialize to 0 - Add a new record to the histogram
+    var newCount: Long = currentCount.orElse(0L)
 
-    // Calculate New name count w.r.t current time & Update the logs with current time
+    // Calculate New name count w.r.t current time - Update Count & Update the logs with current time
     if ((newDate.getTime() - oldDate.getTime()) / 1000 < this.timeWindow) {
       logStore.put(oldDate.getTime() + "-" + name, name)
+      //2. Increment count for the name record if it occurs again
       newCount = newCount + 1
     }
 
